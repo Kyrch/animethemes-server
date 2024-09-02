@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use Barryvdh\Debugbar\Facades\Debugbar;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\AliasLoader;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
@@ -40,5 +42,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         EnsureFeaturesAreActive::whenInactive(fn (Request $request, array $features) => new Response(status: 403));
+
+        AliasLoader::getInstance()->alias('Debugbar', Debugbar::class);
     }
 }
