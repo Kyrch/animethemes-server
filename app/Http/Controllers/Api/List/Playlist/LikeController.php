@@ -25,6 +25,7 @@ use App\Http\Resources\List\Playlist\Collection\TrackCollection;
 use App\Http\Resources\List\Playlist\Resource\TrackResource;
 use App\Models\List\Playlist;
 use App\Models\List\Playlist\PlaylistTrack;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Pennant\Middleware\EnsureFeaturesAreActive;
@@ -124,10 +125,10 @@ class LikeController extends BaseController
      */
     public function destroy(PlaylistTrack $track, DestroyTrackAction $action): TrackResource
     {
-        $playlist = Playlist::query()->firstOrFail([
-            Playlist::ATTRIBUTE_NAME => MyLikeController::PLAYLIST_NAME,
-            Playlist::ATTRIBUTE_USER => Auth::id(),
-        ]);
+        $playlist = Playlist::query()
+            ->where(Playlist::ATTRIBUTE_NAME, MyLikeController::PLAYLIST_NAME)
+            ->where(Playlist::ATTRIBUTE_USER, Auth::id())
+            ->firstOrFail();
 
         $deleted = $action->destroy($playlist, $track);
 
@@ -145,10 +146,10 @@ class LikeController extends BaseController
      */
     public function restore(PlaylistTrack $track, RestoreTrackAction $action): TrackResource
     {
-        $playlist = Playlist::query()->firstOrFail([
-            Playlist::ATTRIBUTE_NAME => MyLikeController::PLAYLIST_NAME,
-            Playlist::ATTRIBUTE_USER => Auth::id(),
-        ]);
+        $playlist = Playlist::query()
+            ->where(Playlist::ATTRIBUTE_NAME, MyLikeController::PLAYLIST_NAME)
+            ->where(Playlist::ATTRIBUTE_USER, Auth::id())
+            ->firstOrFail();
 
         $restored = $action->restore($playlist, $track);
 
@@ -166,10 +167,10 @@ class LikeController extends BaseController
      */
     public function forceDelete(PlaylistTrack $track, ForceDeleteTrackAction $action): JsonResponse
     {
-        $playlist = Playlist::query()->firstOrFail([
-            Playlist::ATTRIBUTE_NAME => MyLikeController::PLAYLIST_NAME,
-            Playlist::ATTRIBUTE_USER => Auth::id(),
-        ]);
+        $playlist = Playlist::query()
+            ->where(Playlist::ATTRIBUTE_NAME, MyLikeController::PLAYLIST_NAME)
+            ->where(Playlist::ATTRIBUTE_USER, Auth::id())
+            ->firstOrFail();
 
         $message = $action->forceDelete($playlist, $track);
 

@@ -12,7 +12,7 @@ use App\Http\Api\Schema\Schema;
 use App\Http\Controllers\Api\BaseController;
 use App\Http\Middleware\Auth\Authenticate;
 use App\Http\Requests\Api\IndexRequest;
-use App\Http\Resources\List\Collection\PlaylistCollection;
+use App\Http\Resources\List\Playlist\Collection\TrackCollection;
 use App\Models\Auth\User;
 use App\Models\List\Playlist;
 use Illuminate\Support\Facades\Auth;
@@ -38,9 +38,9 @@ class MyLikeController extends BaseController
      *
      * @param  IndexRequest  $request
      * @param  IndexAction  $action
-     * @return PlaylistCollection
+     * @return TrackCollection
      */
-    public function index(IndexRequest $request, IndexAction $action): PlaylistCollection
+    public function index(IndexRequest $request, IndexAction $action): TrackCollection
     {
         $query = new Query($request->validated());
 
@@ -49,9 +49,9 @@ class MyLikeController extends BaseController
 
         $builder = $user->playlists()->getQuery()->firstWhere(Playlist::ATTRIBUTE_NAME, static::PLAYLIST_NAME)->tracks()->getQuery();
 
-        $playlists = $action->index($builder, $query, $request->schema());
+        $tracks = $action->index($builder, $query, $request->schema());
 
-        return new PlaylistCollection($playlists, $query);
+        return new TrackCollection($tracks, $query);
     }
 
     /**
