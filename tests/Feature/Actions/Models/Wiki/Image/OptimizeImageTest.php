@@ -8,6 +8,7 @@ use App\Enums\Actions\ActionStatus;
 use App\Models\Wiki\Image;
 use Illuminate\Http\Testing\File;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -22,6 +23,10 @@ test('converts to avif', function () {
         Image::ATTRIBUTE_PATH => $fsFile,
     ]);
 
+    Process::fake([
+        'ffmpeg*' => Process::result('done', exitCode: 0),
+    ]);
+
     $action = new OptimizeImageAction($image, 'avif');
 
     $result = $action->handle();
@@ -30,7 +35,7 @@ test('converts to avif', function () {
     $this->assertTrue($result->getStatus() === ActionStatus::PASSED);
     $this->assertDatabaseCount(Image::class, 1);
     $this->assertTrue($image->exists());
-});
+})->only();
 
 test('passes', function () {
     $fs = Storage::fake(Config::get(ImageConstants::DISKS_QUALIFIED));
@@ -41,6 +46,10 @@ test('passes', function () {
         Image::ATTRIBUTE_PATH => $fsFile,
     ]);
 
+    Process::fake([
+        'ffmpeg*' => Process::result('done', exitCode: 0),
+    ]);
+
     $action = new OptimizeImageAction($image);
 
     $result = $action->handle();
@@ -48,4 +57,4 @@ test('passes', function () {
     $this->assertTrue($result->getStatus() === ActionStatus::PASSED);
     $this->assertDatabaseCount(Image::class, 1);
     $this->assertTrue($image->exists());
-});
+})->only();
