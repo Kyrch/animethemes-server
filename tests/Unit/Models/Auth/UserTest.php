@@ -7,7 +7,6 @@ use App\Models\List\ExternalProfile;
 use App\Models\List\Playlist;
 use App\Models\User\Like;
 use App\Models\User\Notification as UserNotification;
-use App\Models\User\Submission;
 use App\Models\User\WatchHistory;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -81,18 +80,6 @@ test('likes', function () {
     $this->assertInstanceOf(HasMany::class, $user->likes());
     $this->assertEquals($likeCount, $user->likes()->count());
     $this->assertInstanceOf(Like::class, $user->likes()->first());
-});
-
-test('submissions', function () {
-    $submissionCount = fake()->randomDigitNotNull();
-
-    $user = User::factory()
-        ->has(Submission::factory()->count($submissionCount))
-        ->createOne();
-
-    $this->assertInstanceOf(HasMany::class, $user->submissions());
-    $this->assertEquals($submissionCount, $user->submissions()->count());
-    $this->assertInstanceOf(Submission::class, $user->submissions()->first());
 });
 
 test('notifications', function () {
