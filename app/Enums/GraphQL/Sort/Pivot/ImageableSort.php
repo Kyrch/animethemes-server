@@ -6,10 +6,10 @@ namespace App\Enums\GraphQL\Sort\Pivot;
 
 use App\Contracts\GraphQL\EnumSort;
 use App\Enums\GraphQL\SortDirection;
-use App\GraphQL\Criteria\Sort\FieldSortCriteria;
-use App\GraphQL\Criteria\Sort\PivotSortCriteria;
-use App\GraphQL\Criteria\Sort\RandomSortCriteria;
-use App\GraphQL\Criteria\Sort\SortCriteria;
+use App\GraphQL\Sort\FieldSortCriteria;
+use App\GraphQL\Sort\PivotSortCriteria;
+use App\GraphQL\Sort\RandomSortCriteria;
+use App\GraphQL\Sort\SortCriteria;
 use App\Models\Wiki\Image;
 use App\Pivots\Morph\Imageable;
 
@@ -28,20 +28,15 @@ enum ImageableSort implements EnumSort
     public function getSortCriteria(): SortCriteria
     {
         return match ($this) {
-            self::ID => new FieldSortCriteria($this, Image::ATTRIBUTE_ID),
-            self::ID_DESC => new FieldSortCriteria($this, Image::ATTRIBUTE_ID, SortDirection::DESC),
-            self::DEPTH => new PivotSortCriteria($this, Imageable::ATTRIBUTE_DEPTH),
-            self::DEPTH_DESC => new PivotSortCriteria($this, Imageable::ATTRIBUTE_DEPTH, SortDirection::DESC),
-            self::CREATED_AT => new FieldSortCriteria($this, Image::ATTRIBUTE_CREATED_AT),
-            self::CREATED_AT_DESC => new FieldSortCriteria($this, Image::ATTRIBUTE_CREATED_AT, SortDirection::DESC),
-            self::UPDATED_AT => new FieldSortCriteria($this, Image::ATTRIBUTE_UPDATED_AT),
-            self::UPDATED_AT_DESC => new FieldSortCriteria($this, Image::ATTRIBUTE_UPDATED_AT, SortDirection::DESC),
-            self::RANDOM => new RandomSortCriteria($this, ''),
+            self::ID => new FieldSortCriteria($this->name, Image::ATTRIBUTE_ID),
+            self::ID_DESC => new FieldSortCriteria($this->name, Image::ATTRIBUTE_ID, SortDirection::DESC),
+            self::DEPTH => new PivotSortCriteria($this->name, Imageable::ATTRIBUTE_DEPTH),
+            self::DEPTH_DESC => new PivotSortCriteria($this->name, Imageable::ATTRIBUTE_DEPTH, SortDirection::DESC),
+            self::CREATED_AT => new FieldSortCriteria($this->name, Image::ATTRIBUTE_CREATED_AT),
+            self::CREATED_AT_DESC => new FieldSortCriteria($this->name, Image::ATTRIBUTE_CREATED_AT, SortDirection::DESC),
+            self::UPDATED_AT => new FieldSortCriteria($this->name, Image::ATTRIBUTE_UPDATED_AT),
+            self::UPDATED_AT_DESC => new FieldSortCriteria($this->name, Image::ATTRIBUTE_UPDATED_AT, SortDirection::DESC),
+            self::RANDOM => new RandomSortCriteria($this->name, ''),
         };
-    }
-
-    public function shouldQualifyColumn(): bool
-    {
-        return true;
     }
 }

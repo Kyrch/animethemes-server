@@ -1,0 +1,60 @@
+"""
+Represents the composition that accompanies an AnimeTheme.
+
+For example, Staple Stable is the song for the Bakemonogatari OP1 AnimeTheme.
+"""
+type Song @model(class: "App\\Models\\Wiki\\Song") {
+    "The primary key of the resource"
+    id: Int! @rename(attribute: "song_id")
+
+    "The name of the composition"
+    title: String
+
+    "The native name of the composition"
+    titleNative: String @rename(attribute: "title_native")
+
+    "The date that the resource was created"
+    createdAt(format: String! = "Y-m-d H:i:s"): String @timestamp(attribute: "created_at")
+
+    "The date that the resource was updated"
+    updatedAt(format: String! = "Y-m-d H:i:s"): String @timestamp(attribute: "updated_at")
+
+    animethemes(
+        type: ThemeType @eq
+        type_in: [ThemeType!] @in(key: "type")
+        sequence: Int @eq
+        sequence_lesser: Int @where(operator: "<", key: "sequence")
+        sequence_greater: Int @where(operator: ">", key: "sequence")
+        sort: [AnimeThemeSort!] @sort
+    ): [AnimeTheme!]! @hasManyCustom(type: SIMPLE)
+
+    performances(
+        alias: String @eq
+        as: String @eq
+        memberAlias: String @eq(key: "member_alias")
+        memberAs: String @eq(key: "member_as")
+        relevance: Int @eq
+        relevance_lesser: Int @where(operator: "<", key: "relevance")
+        relevance_greater: Int @where(operator: ">", key: "relevance")
+        where: _ @whereConditions(columnsEnum: PerformanceFilterableColumns, handler: "App\\GraphQL\\WhereConditions\\WhereConditionsHandler")
+        sort: [PerformanceSort!] @sort
+    ): [Performance!]! @hasManyCustom(type: SIMPLE)
+
+    resources(
+        site: ResourceSite @eq
+        externalId: Int @eq(key: "external_id")
+        where: _ @whereConditions(columnsEnum: ExternalResourceFilterableColumns, handler: "App\\GraphQL\\WhereConditions\\WhereConditionsHandler")
+        sort: [ExternalResourceSort!] @sort
+    ): [ExternalResource!]! @belongsToManyCustom(type: CONNECTION, edgeType: "ExternalResourceEdge")
+}
+
+extend type Query {
+    "Returns a listing of song resources given fields."
+    songPagination(
+        id: Int @eq(key: "song_id")
+        title: String @eq
+        titleNative: String @eq(key: "title_native")
+        where: _ @whereConditions(columnsEnum: SongFilterableColumns, handler: "App\\GraphQL\\WhereConditions\\WhereConditionsHandler")
+        sort: [SongSort!] @sort
+    ): [Song!]! @paginate
+}

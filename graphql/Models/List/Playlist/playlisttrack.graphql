@@ -1,0 +1,76 @@
+"""
+Represents an entry in a playlist.
+
+For example, a "/r/anime's Best OPs and EDs of 2022" playlist may contain a track for the ParipiKoumei-OP1.webm video.
+"""
+type PlaylistTrack @model(class: "App\\Models\\List\\Playlist\\PlaylistTrack") {
+    "The primary key of the resource"
+    id: String! @rename(attribute: "hashid")
+
+    "The position of the playlist track within the playlist"
+    position: Int!
+
+    "The date that the resource was created"
+    createdAt(format: String! = "Y-m-d H:i:s"): String @timestamp(attribute: "created_at")
+
+    "The date that the resource was updated"
+    updatedAt(format: String! = "Y-m-d H:i:s"): String @timestamp(attribute: "updated_at")
+
+    playlist: Playlist! @belongsTo
+
+    animethemeentry: AnimeThemeEntry! @belongsTo
+
+    video: Video! @belongsTo
+
+    previous: PlaylistTrack @belongsTo @deprecated
+
+    next: PlaylistTrack @belongsTo @deprecated
+}
+
+extend type Query {
+    "Returns a playlist track resource."
+    playlisttrack(
+        id: String! @eq(key: "hashid")
+        playlist: String!
+    ): PlaylistTrack @builder(method: "App\\GraphQL\\Builders\\List\\PlaylistTrackBuilder") @find(model: "App\\Models\\List\\Playlist\\PlaylistTrack")
+
+    "Returns a listing of playlist track resources given fields."
+    playlisttrackPagination(
+        playlist: String! @bind(class: "App\\Models\\List\\Playlist", column: "hashid")
+        position: Int @eq
+        where: _ @whereConditions(columnsEnum: PlaylistTrackFilterableColumns, handler: "App\\GraphQL\\WhereConditions\\WhereConditionsHandler")
+        sort: [PlaylistTrackSort!] @sort
+    ): [PlaylistTrack!]! @paginate @builder(method: "App\\GraphQL\\Builders\\List\\PlaylistTrackPaginationBuilder")
+}
+
+extend type Mutation {
+    CreatePlaylistTrack(
+        playlist: String!
+        entryId: Int!
+        videoId: Int!
+        position: Int
+        previous: String @deprecated(reason: "Use position instead")
+        next: String @deprecated(reason: "Use position instead")
+    ): PlaylistTrack!
+    @canFindMultiple(ability: "create", find: ["playlist"], models: ["App\\Models\\List\\Playlist"], columns: ["hashid"])
+    @field(resolver: "App\\GraphQL\\Mutations\\List\\Playlist\\PlaylistTrackMutation@create")
+
+    UpdatePlaylistTrack(
+        id: String!
+        playlist: String!
+        entryId: Int
+        videoId: Int
+        position: Int
+        previous: String @deprecated(reason: "Use position instead")
+        next: String @deprecated(reason: "Use position instead")
+    ): PlaylistTrack!
+    @canFindMultiple(ability: "update", find: ["id", "playlist"], models: ["App\\Models\\List\\Playlist\\PlaylistTrack", "App\\Models\\List\\Playlist"], columns: ["hashid", "hashid"])
+    @field(resolver: "App\\GraphQL\\Mutations\\List\\Playlist\\PlaylistTrackMutation@update")
+
+    DeletePlaylistTrack(
+        id: String!
+        playlist: String!
+    ): MessageResponse!
+    @canFindMultiple(ability: "delete", find: ["id", "playlist"], models: ["App\\Models\\List\\Playlist\\PlaylistTrack", "App\\Models\\List\\Playlist"], columns: ["hashid", "hashid"])
+    @field(resolver: "App\\GraphQL\\Mutations\\List\\Playlist\\PlaylistTrackMutation@delete")
+}

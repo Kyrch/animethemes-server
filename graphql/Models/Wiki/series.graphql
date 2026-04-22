@@ -1,0 +1,63 @@
+"""
+Represents a collection of related anime.
+
+For example, the Monogatari series is the collection of the Bakemonogatari anime and its related productions.
+"""
+type Series @model(class: "App\\Models\\Wiki\\Series") {
+    "The primary key of the resource"
+    id: Int! @rename(attribute: "series_id")
+
+    "The primary title of the series"
+    name: String!
+
+    "The URL slug & route key of the resource"
+    slug: String!
+
+    "The date that the resource was created"
+    createdAt(format: String! = "Y-m-d H:i:s"): String @timestamp(attribute: "created_at")
+
+    "The date that the resource was updated"
+    updatedAt(format: String! = "Y-m-d H:i:s"): String @timestamp(attribute: "updated_at")
+
+    anime(
+        name_like: String @like(key: "name")
+        mediaFormat: AnimeMediaFormat @eq(key: "media_format")
+        mediaFormat_in: [AnimeMediaFormat!] @in(key: "media_format")
+        format: AnimeFormat @eq
+        format_in: [AnimeFormat!] @in(key: "format")
+        season: AnimeSeason @eq
+        season_in: [AnimeSeason!] @in(key: "season")
+        year: Int @eq
+        year_lesser: Int @where(operator: "<", key: "year")
+        year_greater: Int @where(operator: ">", key: "year")
+        where: _ @whereConditions(columnsEnum: AnimeFilterableColumns, handler: "App\\GraphQL\\WhereConditions\\WhereConditionsHandler")
+        sort: [AnimeSort!] @sort
+    ): [Anime!]! @belongsToManyCustom(type: CONNECTION, edgeType: "SeriesAnimeEdge")
+}
+
+type SeriesAnimeEdge @model(class: "App\\Pivots\\Wiki\\AnimeSeries") {
+    "The Anime node."
+    node: Anime!
+
+    "The date that the resource was created"
+    createdAt(format: String! = "Y-m-d H:i:s"): String @timestamp(attribute: "created_at")
+
+    "The date that the resource was updated"
+    updatedAt(format: String! = "Y-m-d H:i:s"): String @timestamp(attribute: "updated_at")
+}
+
+extend type Query {
+    "Returns a series resource."
+    series(slug: String! @eq): Series @find(model: "App\\Models\\Wiki\\Series")
+
+    "Returns a listing of series resources given fields."
+    seriesPagination(
+        id: Int @eq(key: "series_id")
+        search: String @search
+        name: String @eq
+        name_like: String @like(key: "name")
+        slug: String @eq
+        where: _ @whereConditions(columnsEnum: SeriesFilterableColumns, handler: "App\\GraphQL\\WhereConditions\\WhereConditionsHandler")
+        sort: [SeriesSort!] @sort
+    ): [Series!]! @paginate
+}
