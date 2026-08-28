@@ -35,10 +35,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use Kyrch\Prohibition\Traits\HasSanctions;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -182,6 +184,32 @@ class User extends Authenticatable implements Auditable, FilamentUser, HasAvatar
         $hash = md5(Str::lower(Str::trim($this->email)));
 
         return "https://www.gravatar.com/avatar/$hash";
+    }
+
+    public function prohibitions(): MorphToMany
+    {
+        return $this->morphToMany(
+            Config::string('prohibition.models.prohibition'),
+            'user',
+            Config::string('prohibition.table_names.model_prohibitions'),
+            'user_id',
+        )
+            ->using(Config::string('prohibition.models.model_prohibition'))
+            ->withPivot(['expires_at', 'moderator_type', 'moderator_id', 'reason'])
+            ->withTimestamps();
+    }
+
+    public function sanctions(): MorphToMany
+    {
+        return $this->morphToMany(
+            config('prohibition.models.sanction'),
+            'user',
+            config('prohibition.table_names.model_sanctions'),
+            'user_id',
+        )
+            ->using(config('prohibition.models.model_sanction'))
+            ->withPivot(['expires_at', 'moderator_type', 'moderator_id', 'reason'])
+            ->withTimestamps();
     }
 
     /**
