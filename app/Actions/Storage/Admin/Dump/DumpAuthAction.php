@@ -6,7 +6,9 @@ namespace App\Actions\Storage\Admin\Dump;
 
 use App\Concerns\Repositories\Admin\ReconcilesDumpRepositories;
 use App\Models\Auth\Permission;
+use App\Models\Auth\Prohibition;
 use App\Models\Auth\Role;
+use App\Models\Auth\Sanction;
 use App\Models\Auth\User;
 use App\Models\List\External\ExternalToken;
 use Illuminate\Support\Facades\Date;
@@ -29,10 +31,14 @@ class DumpAuthAction extends DumpAction
             ExternalToken::TABLE,
 
             Permission::TABLE,
+            Prohibition::TABLE,
             Role::TABLE,
+            Sanction::TABLE,
             User::TABLE,
+            'model_prohibitions',
+            'sanction_prohibition',
             'model_has_permissions',
-            'model_has_roles',
+            'user_roles',
             'password_reset_tokens',
             'personal_access_tokens',
             'role_has_permissions',
