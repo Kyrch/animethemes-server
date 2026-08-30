@@ -41,7 +41,9 @@ Docker will setup PHP, MySQL and Typesense for you. If you are on Windows, use t
 git clone git@github.com:AnimeThemes/animethemes-server.git
 cd animethemes-server
 
-cp .env.example-sail .env
+cp .env.example .env
+
+cp docker-compose.local.yml docker-compose.yml
 
 # Install Composer dependencies using a throwaway container
 docker run --rm \
@@ -52,7 +54,7 @@ docker run --rm \
     composer install --ignore-platform-reqs
 
 # Start sail
-./vendor/bin/sail up -d
+./vendor/bin/sail up -f docker-compose.dev.yml -d
 
 # Generate an application key
 ./vendor/bin/sail artisan key:generate

@@ -18,11 +18,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'mysql_prod'),
-
-    'models' => [
-        // Override default connection by model class
-    ],
+    'default' => env('DB_CONNECTION', 'mysql'),
 
     /*
     |--------------------------------------------------------------------------
@@ -50,7 +46,7 @@ return [
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
         ],
 
-        'mysql_prod' => [
+        'mysql' => [
             'driver' => 'mysql',
             'read' => [
                 'host' => [
@@ -70,26 +66,6 @@ return [
             'username' => env('DB_USERNAME', 'forge'),
             'password' => env('DB_PASSWORD', ''),
             'unix_socket' => env('DB_SOCKET', ''),
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => '',
-            'prefix_indexes' => true,
-            'strict' => true,
-            'engine' => null,
-            'options' => extension_loaded('pdo_mysql') ? array_filter([
-                Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
-        ],
-
-        'mysql_beta' => [
-            'driver' => 'mysql',
-            'url' => env('DATABASE_BETA_URL'),
-            'host' => env('DB_BETA_HOST', '127.0.0.1'),
-            'port' => env('DB_BETA_PORT', '3306'),
-            'database' => env('DB_BETA_DATABASE', 'forge'),
-            'username' => env('DB_BETA_USERNAME', 'forge'),
-            'password' => env('DB_BETA_PASSWORD', ''),
-            'unix_socket' => env('DB_BETA_SOCKET', ''),
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_unicode_ci',
             'prefix' => '',
