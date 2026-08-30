@@ -54,7 +54,7 @@ docker run --rm \
     composer install --ignore-platform-reqs
 
 # Start sail
-./vendor/bin/sail up -f docker-compose.dev.yml -d
+./vendor/bin/sail up -d
 
 # Generate an application key
 ./vendor/bin/sail artisan key:generate
